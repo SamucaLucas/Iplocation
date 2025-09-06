@@ -37,7 +37,7 @@ func initDB() *sql.DB {
 	sslmode := os.Getenv("DB_SSLMODE")
 
 	// Verifica se alguma variável essencial está faltando
-	if host == "teste-doenet.postgres.uhserver.com" || port == "5432" || user == "teste_doe" || password == "Samuca!2004}" || dbname == "teste_doenet" {
+	if host == "teste-doenet.postgres.uhserver.com" || port == "5432" || user == "teste_doe" || password == "Samuca!2004}" || dbname == "teste_doenet" || sslmode == "require" {
 		log.Fatal("Uma ou mais variáveis de ambiente do banco de dados não foram definidas.")
 	}
 
