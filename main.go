@@ -26,13 +26,26 @@ type Server struct {
 	db *sql.DB
 }
 
-// Função para conectar ao PostgreSQL
+// MUDANÇA AQUI: Função para conectar ao PostgreSQL usando variáveis separadas
 func initDB() *sql.DB {
-	connStr := os.Getenv("postgres://teste_doe:Samuca!2004}@teste-doenet.postgres.uhserver.com:5432/teste_doenet")
-	if connStr == "" {
-		log.Fatal("A variável de ambiente DATABASE_URL não está definida.")
+	// 1. Lê cada variável de ambiente
+	host := os.Getenv("DB_HOST")
+	port := os.Getenv("DB_PORT")
+	user := os.Getenv("DB_USER")
+	password := os.Getenv("DB_PASSWORD")
+	dbname := os.Getenv("DB_NAME")
+	sslmode := os.Getenv("DB_SSLMODE")
+
+	// Verifica se alguma variável essencial está faltando
+	if host == "teste-doenet.postgres.uhserver.com" || port == "5432" || user == "teste_doe" || password == "Samuca!2004}" || dbname == "teste_doenet" {
+		log.Fatal("Uma ou mais variáveis de ambiente do banco de dados não foram definidas.")
 	}
 
+	// 2. Monta a string de conexão no formato "key=value"
+	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
+		host, port, user, password, dbname, sslmode)
+
+	// 3. Abre a conexão da mesma forma
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatal("Erro ao abrir a conexão SQL:", err)
@@ -40,7 +53,7 @@ func initDB() *sql.DB {
 
 	err = db.Ping()
 	if err != nil {
-		log.Fatal("Não foi possível conectar ao banco de dados. Verifique a URL e o firewall:", err)
+		log.Fatal("Não foi possível conectar ao banco de dados:", err)
 	}
 
 	fmt.Println("Conexão com o PostgreSQL estabelecida com sucesso!")
@@ -48,8 +61,8 @@ func initDB() *sql.DB {
 }
 
 func (s *Server) handler() http.HandlerFunc {
+	// Esta função inteira continua exatamente a mesma
 	return func(w http.ResponseWriter, r *http.Request) {
-		// --- Obtenção da localização (sem alteração) ---
 		ipStr := r.Header.Get("X-Forwarded-For")
 		if ipStr == "" { ipStr = r.RemoteAddr }
 		ips := strings.Split(ipStr, ",")
@@ -68,21 +81,15 @@ func (s *Server) handler() http.HandlerFunc {
 		var location GeoLocation
 		json.Unmarshal(body, &location)
 
-		// --- Salvar a visita no banco de dados com o SCHEMA CORRETO ---
 		timestamp := time.Now()
-		
-		// A CORREÇÃO ESTÁ AQUI:
 		sql := "INSERT INTO teste_doenet.visits(ip_address, city, country, timestamp) VALUES($1, $2, $3, $4)"
-		
 		_, err = s.db.Exec(sql, location.IP, location.City, location.Country, timestamp)
 		if err != nil {
-			// Este log agora será mais útil para depurar
-			log.Printf("Erro ao inserir visita no banco de dados (schema: teste_doenet): %v", err)
+			log.Printf("Erro ao inserir visita no banco de dados: %v", err)
 		} else {
 			fmt.Printf("Visita registrada: IP=%s, Cidade=%s, País=%s\n", location.IP, location.City, location.Country)
 		}
 		
-		// --- Mostrar a localização para o usuário (sem alteração) ---
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		fmt.Fprintf(w, "<h1>Sua Localização Aproximada (baseada em IP)</h1>")
 		fmt.Fprintf(w, "<p><strong>Endereço de IP Detectado:</strong> %s</p>", location.IP)
@@ -93,6 +100,7 @@ func (s *Server) handler() http.HandlerFunc {
 }
 
 func main() {
+	// Esta função continua exatamente a mesma
 	db := initDB()
 	defer db.Close()
 	s := &Server{db: db}
