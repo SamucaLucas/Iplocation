@@ -1,0 +1,349 @@
+/* ---- RESET E VARIÁVEIS GLOBAIS ---- */
+:root {
+    --primary-color: #ff6666;
+    --dark-bg: #232323;
+    --light-bg: #ffffff;
+    --text-dark: #000000;
+    --text-light: #ffffff;
+    --font-heading: 'Jost', sans-serif;
+    --font-body: 'Rubik', sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-body);
+    color: var(--text-dark);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+h1, h2, h3 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+h1 { font-size: 3.5rem; }
+h2 { font-size: 2.5rem; }
+p { margin-bottom: 1rem; }
+a { text-decoration: none; color: inherit; }
+ul { list-style: none; }
+
+section {
+    padding: 6rem 0;
+}
+
+/* ---- BOTÕES ---- */
+.btn {
+    display: inline-block;
+    padding: 12px 28px;
+    border-radius: 30px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: var(--text-light);
+}
+
+.btn-primary:hover {
+    background-color: #e65c5c;
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-secondary:hover {
+    background-color: var(--primary-color);
+    color: var(--text-light);
+}
+
+.btn-white {
+    background-color: var(--light-bg);
+    color: var(--primary-color);
+}
+.btn-white:hover {
+    opacity: 0.9;
+}
+
+/* ---- CABEÇALHO E NAVEGAÇÃO ---- */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 1rem 0;
+    z-index: 1000;
+    transition: background-color 0.3s ease, padding 0.3s ease;
+}
+
+.navbar.scrolled {
+    background-color: var(--dark-bg);
+    padding: 0.5rem 0;
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-light);
+}
+
+.nav-menu {
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-menu a {
+    color: var(--text-light);
+    font-weight: 500;
+    padding-bottom: 5px;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.3s ease;
+}
+
+.nav-menu a:hover {
+    border-color: var(--primary-color);
+}
+
+/* ---- SEÇÃO HERO ---- */
+#hero {
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://doc9.com.br/wp-content/uploads/2023/03/foto-principal-ataque-cibernetico.jpg') no-repeat center center/cover;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: left;
+    color: var(--text-light);
+}
+
+.hero-content p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+}
+
+.button-group {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+/* ---- SEÇÃO DE RECURSOS (FEATURES) E SERVIÇOS ---- */
+#features, #services {
+    background-color: #f8f9fa;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    text-align: center;
+}
+
+.feature-item .icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.service-card {
+    background-color: var(--light-bg);
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.service-card:hover {
+    transform: translateY(-10px);
+}
+
+.service-card img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+}
+
+.service-card h3, .service-card p, .service-card .learn-more {
+    padding: 0 1.5rem;
+}
+.service-card h3 {
+    margin-top: 1.5rem;
+}
+
+.learn-more {
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+/* ---- SEÇÃO SOBRE ---- */
+.about-container {
+    display: flex;
+    align-items: center;
+    gap: 4rem;
+}
+
+.about-image {
+    flex: 1;
+}
+
+.about-image img {
+    width: 100%;
+    border-radius: 10px;
+}
+
+.about-text {
+    flex: 1;
+}
+
+.about-text ul li {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+/* ---- SEÇÃO CTA ---- */
+#cta {
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    text-align: center;
+}
+
+#cta h2 {
+    font-size: 2rem;
+}
+
+/* ---- RODAPÉ ---- */
+footer {
+    background-color: var(--dark-bg);
+    color: #a0a0a0;
+    text-align: center;
+    padding: 2rem 0;
+}
+
+/* ---- RESPONSIVIDADE ---- */
+@media (max-width: 768px) {
+    h1 { font-size: 2.5rem; }
+    h2 { font-size: 2rem; }
+
+    .nav-menu, .nav-button {
+        display: none; /* Simplificando: esconde o menu em telas pequenas. Um menu funcional (hambúrguer) requer JavaScript. */
+    }
+
+    .grid-container, .about-container {
+        grid-template-columns: 1fr;
+        flex-direction: column;
+    }
+    
+    .button-group {
+        flex-direction: column;
+    }
+}
+
+/* ---- SEÇÃO FAQ (PERGUNTAS FREQUENTES) ---- */
+#faq {
+    background-color: #eae6f3; /* Cor de fundo lilás claro */
+}
+
+#faq .section-title {
+    color: var(--text-dark); /* Texto escuro para bom contraste */
+    margin-bottom: 2rem;
+}
+
+.faq-accordion {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.faq-item {
+    margin-bottom: 1rem;
+}
+
+.faq-question {
+    background-color: var(--light-bg);
+    color: var(--text-dark);
+    border: none;
+    border-radius: 20px;
+    padding: 1rem 1.5rem;
+    width: 100%;
+    
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    text-align: left;
+    font-family: var(--font-body);
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.faq-question:hover {
+    background-color: #f8f8f8;
+}
+
+.faq-icon {
+    font-size: 1.5rem;
+    transition: transform 0.3s ease;
+    font-weight: bold;
+}
+
+.faq-answer {
+    background-color: #fdfcff;
+    padding: 0 1.5rem; /* Padding vertical é zero quando fechado */
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.faq-answer p {
+    padding: 1.5rem 0; /* Padding interno para o parágrafo */
+    margin: 0;
+}
+
+/* --- ESTILOS PARA QUANDO O ITEM ESTÁ ATIVO (ABERTO) --- */
+.faq-item.active .faq-question {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.faq-item.active .faq-icon {
+    transform: rotate(180deg);
+}
+
+.faq-item.active .faq-answer {
+    max-height: 300px; /* Um valor alto o suficiente para caber qualquer resposta */
+}

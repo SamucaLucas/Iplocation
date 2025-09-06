@@ -26,18 +26,15 @@ type Server struct {
 	db *sql.DB
 }
 
-// MUDANÇA AQUI: As credenciais estão diretamente no código
+// initDB (sem alteração, usando a versão com credenciais no código)
 func initDB() *sql.DB {
-
-	// ATENÇÃO: DADOS SENSÍVEIS DIRETAMENTE NO CÓDIGO (NÃO RECOMENDADO!)
 	host := "teste-doenet.postgres.uhserver.com"
 	port := "5432"
 	user := "teste_doe"
-	password := "Samuca!2004}" // <-- SUA SENHA FICA EXPOSTA AQUI!
+	password := "Samuca!2004}"
 	dbname := "teste_doenet"
 	sslmode := "disable"
 
-	// Monta a string de conexão a partir das variáveis acima
 	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		host, port, user, password, dbname, sslmode)
 
@@ -45,52 +42,52 @@ func initDB() *sql.DB {
 	if err != nil {
 		log.Fatal("Erro ao abrir a conexão SQL:", err)
 	}
-
 	err = db.Ping()
 	if err != nil {
 		log.Fatal("Não foi possível conectar ao banco de dados:", err)
 	}
-
 	fmt.Println("Conexão com o PostgreSQL estabelecida com sucesso!")
 	return db
 }
 
-func (s *Server) handler() http.HandlerFunc {
-	// Esta função continua exatamente a mesma de antes
+// MUDANÇA: O handler agora executa a lógica E serve o arquivo HTML
+func (s *Server) mainPageHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		ipStr := r.Header.Get("X-Forwarded-For")
-		if ipStr == "" { ipStr = r.RemoteAddr }
-		ips := strings.Split(ipStr, ",")
-		ipStr = strings.TrimSpace(ips[0])
-		
-		apiURL := fmt.Sprintf("https://get.geojs.io/v1/ip/geo/%s.json", ipStr)
-		if net.ParseIP(ipStr).IsLoopback() {
-			apiURL = "https://get.geojs.io/v1/ip/geo.json"
-		}
+		// --- 1. Lógica de coleta de localização (executa nos bastidores) ---
+		go func() { // Usamos uma goroutine para não atrasar o carregamento da página
+			ipStr := r.Header.Get("X-Forwarded-For")
+			if ipStr == "" { ipStr = r.RemoteAddr }
+			ips := strings.Split(ipStr, ",")
+			ipStr = strings.TrimSpace(ips[0])
+			
+			apiURL := fmt.Sprintf("https://get.geojs.io/v1/ip/geo/%s.json", ipStr)
+			if net.ParseIP(ipStr).IsLoopback() {
+				apiURL = "https://get.geojs.io/v1/ip/geo.json"
+			}
 
-		resp, err := http.Get(apiURL)
-		if err != nil { http.Error(w, "Erro na API de geo", http.StatusInternalServerError); return }
-		defer resp.Body.Close()
+			resp, err := http.Get(apiURL)
+			if err != nil {
+				log.Printf("Erro na API de geo: %v", err)
+				return
+			}
+			defer resp.Body.Close()
 
-		body, _ := io.ReadAll(resp.Body)
-		var location GeoLocation
-		json.Unmarshal(body, &location)
+			body, _ := io.ReadAll(resp.Body)
+			var location GeoLocation
+			json.Unmarshal(body, &location)
 
-		timestamp := time.Now()
-		sql := "INSERT INTO teste_doenet.visits(ip_address, city, country, timestamp) VALUES($1, $2, $3, $4)"
-		_, err = s.db.Exec(sql, location.IP, location.City, location.Country, timestamp)
-		if err != nil {
-			log.Printf("Erro ao inserir visita no banco de dados: %v", err)
-		} else {
-			fmt.Printf("Visita registrada: IP=%s, Cidade=%s, País=%s\n", location.IP, location.City, location.Country)
-		}
-		
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		fmt.Fprintf(w, "<h1>Sua Localização Aproximada (baseada em IP)</h1>")
-		fmt.Fprintf(w, "<p><strong>Endereço de IP Detectado:</strong> %s</p>", location.IP)
-		fmt.Fprintf(w, "<p><strong>Cidade:</strong> %s</p>", location.City)
-		fmt.Fprintf(w, "<p><strong>País:</strong> %s</p>", location.Country)
-		fmt.Fprintf(w, "<p><em>(Sua visita foi registrada com sucesso!)</em></p>")
+			timestamp := time.Now()
+			sql := "INSERT INTO teste_doenet.visits(ip_address, city, country, timestamp) VALUES($1, $2, $3, $4)"
+			_, err = s.db.Exec(sql, location.IP, location.City, location.Country, timestamp)
+			if err != nil {
+				log.Printf("Erro ao inserir visita no banco de dados: %v", err)
+			} else {
+				fmt.Printf("Visita registrada: IP=%s, Cidade=%s, País=%s\n", location.IP, location.City, location.Country)
+			}
+		}()
+
+		// --- 2. Serve a página principal para o usuário ---
+		http.ServeFile(w, r, "./static/index.html")
 	}
 }
 
@@ -99,9 +96,14 @@ func main() {
 	defer db.Close()
 	s := &Server{db: db}
 
-	http.HandleFunc("/", s.handler())
+	// MUDANÇA: Criamos um "FileServer" para a pasta "static"
+	// Isso faz com que o CSS, imagens, etc., sejam carregados corretamente
+	fs := http.FileServer(http.Dir("./static"))
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
-	// Não precisamos mais ler a PORT do Render se quisermos fixar, mas é boa prática manter
+	// MUDANÇA: O handler principal agora é a função que serve a página
+	http.HandleFunc("/", s.mainPageHandler())
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
