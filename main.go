@@ -26,26 +26,21 @@ type Server struct {
 	db *sql.DB
 }
 
-// MUDANÇA AQUI: Função para conectar ao PostgreSQL usando variáveis separadas
+// MUDANÇA AQUI: As credenciais estão diretamente no código
 func initDB() *sql.DB {
-	// 1. Lê cada variável de ambiente
-	host := os.Getenv("DB_HOST")
-	port := os.Getenv("DB_PORT")
-	user := os.Getenv("DB_USER")
-	password := os.Getenv("DB_PASSWORD")
-	dbname := os.Getenv("DB_NAME")
-	sslmode := os.Getenv("DB_SSLMODE")
 
-	// Verifica se alguma variável essencial está faltando
-	if host == "teste-doenet.postgres.uhserver.com" || port == "5432" || user == "teste_doe" || password == "Samuca!2004}" || dbname == "teste_doenet" || sslmode == "require" {
-		log.Fatal("Uma ou mais variáveis de ambiente do banco de dados não foram definidas.")
-	}
+	// ATENÇÃO: DADOS SENSÍVEIS DIRETAMENTE NO CÓDIGO (NÃO RECOMENDADO!)
+	host := "teste-doenet.postgres.uhserver.com"
+	port := "5432"
+	user := "teste_doe"
+	password := "Samuca!2004}" // <-- SUA SENHA FICA EXPOSTA AQUI!
+	dbname := "teste_doenet"
+	sslmode := "require"
 
-	// 2. Monta a string de conexão no formato "key=value"
+	// Monta a string de conexão a partir das variáveis acima
 	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		host, port, user, password, dbname, sslmode)
 
-	// 3. Abre a conexão da mesma forma
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatal("Erro ao abrir a conexão SQL:", err)
@@ -61,7 +56,7 @@ func initDB() *sql.DB {
 }
 
 func (s *Server) handler() http.HandlerFunc {
-	// Esta função inteira continua exatamente a mesma
+	// Esta função continua exatamente a mesma de antes
 	return func(w http.ResponseWriter, r *http.Request) {
 		ipStr := r.Header.Get("X-Forwarded-For")
 		if ipStr == "" { ipStr = r.RemoteAddr }
@@ -100,13 +95,13 @@ func (s *Server) handler() http.HandlerFunc {
 }
 
 func main() {
-	// Esta função continua exatamente a mesma
 	db := initDB()
 	defer db.Close()
 	s := &Server{db: db}
 
 	http.HandleFunc("/", s.handler())
 
+	// Não precisamos mais ler a PORT do Render se quisermos fixar, mas é boa prática manter
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
