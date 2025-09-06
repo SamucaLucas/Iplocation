@@ -30,7 +30,7 @@ type Server struct {
 // Função para conectar ao PostgreSQL
 func initDB() *sql.DB {
 	// Pega a URL de conexão da variável de ambiente (DATABASE_URL)
-	connStr := os.Getenv("postgres://teste_doe:S@muc@2004@teste-doenet.postgres.uhserver.com:5432/teste_doenet")
+	connStr := os.Getenv("postgres://teste_doe:Samuca!2004}@teste-doenet.postgres.uhserver.com:5432/teste_doenet")
 	if connStr == "" {
 		log.Fatal("A variável de ambiente DATABASE_URL não está definida.")
 	}
