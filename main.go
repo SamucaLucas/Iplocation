@@ -30,7 +30,7 @@ type Server struct {
 // MUDANÇA: Função para conectar ao PostgreSQL
 func initDB() *sql.DB {
 	// Pega a URL de conexão da variável de ambiente que vamos configurar no Render
-	connStr := os.Getenv("DATABASE_URL")
+	connStr := os.Getenv("postgresql://iplocation_user:dm1BSEGguOOkdVpD5kGdK9xzlPQ9JIl5@dpg-d2ts4sbuibrs73f36hdg-a.oregon-postgres.render.com/iplocation")
 	if connStr == "" {
 		log.Fatal("A variável de ambiente DATABASE_URL não está definida.")
 	}
