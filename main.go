@@ -37,7 +37,8 @@ func initDB() *sql.DB {
 
 	// Abre a conexão com o banco de dados PostgreSQL
 	db, err := sql.Open("postgres", connStr)
-	if err_ != nil {
+	// A CORREÇÃO ESTÁ AQUI:
+	if err != nil {
 		log.Fatal(err)
 	}
 
@@ -49,8 +50,6 @@ func initDB() *sql.DB {
 
 	fmt.Println("Conexão com o PostgreSQL estabelecida com sucesso!")
 	
-	// A PARTE DE CRIAÇÃO DA TABELA FOI REMOVIDA DAQUI
-
 	return db
 }
 
