@@ -35,11 +35,11 @@ func initDB() *sql.DB {
 	user := "teste_doe"
 	password := "Samuca!2004}" // <-- SUA SENHA FICA EXPOSTA AQUI!
 	dbname := "teste_doenet"
-
+	sslmode := "disable"
 
 	// Monta a string de conexão a partir das variáveis acima
-	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s ",
-		host, port, user, password, dbname)
+	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
+		host, port, user, password, dbname, sslmode)
 
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
